@@ -1,0 +1,85 @@
+{% extends "base.html" %} 
+{% block title %}
+    {% if is_edit %}
+        Edit Book
+    {% else %}
+        Add New Book
+    {% endif %} - Library Demo
+{% endblock %} 
+{% block content %}
+
+<div class="container mt-4"> <!-- container adds space around the content. mt-4 adds top margin -->
+    
+    <h2>{% if is_edit %}
+            Edit Book
+        {% else %}
+            Add New Book
+        {% endif %}</h2>
+    
+    <!-- Book Form -->
+    <form method="POST" action="{{ url_for('book_save') }}">
+        <input type="hidden" id="book_id" name="book_id" 
+                value="{{ book.bookid if book else '' }}">
+        <table class="table table-borderless w-75 mx-auto"> <!-- w-75 is 75% width (also w-25, w-50, w-100). mx-auto centers the table -->
+            <tr>
+                <td style="width: 10em;"> <!-- Fixed width for labels. em units are relative to the font size. -->
+                    <label for="booktitle" class="form-label">Book Title <span class="text-danger"><strong>*</strong></span></label></td>
+                <td><input type="text" class="form-control" id="booktitle" name="booktitle" 
+                        value="{{ book.booktitle if book else '' }}" 
+                        placeholder="Enter book title" maxlength="45" required></td>
+                <td style="width: 10em;"><label for="author" class="form-label">Author <span class="text-danger"><strong>*</strong></span></label></td>
+                <td><input type="text" class="form-control" id="author" name="author" 
+                        value="{{ book.author if book else '' }}" 
+                        placeholder="Enter author name" maxlength="45" required></td>
+            </tr>
+            <tr>
+                <td><label for="bookcategory" class="form-label">Category</label></td>
+                <td>
+                    <select class="form-control" id="bookcategory" name="bookcategory">
+                        <option value="">-- Select Category --</option>
+                        {% for category in categories %}
+                        <option value="{{ category.category }}" 
+                                {% if book and book.bookcategory == category.category %}selected{% endif %}>
+                            {{ category.category }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td><label for="yearofpublication" class="form-label">Year of Publication</label></td>
+                <td><input type="number" class="form-control" id="yearofpublication" name="yearofpublication" 
+                        value="{{ book.yearofpublication if book and book.yearofpublication else '' }}" 
+                        placeholder="Enter year (e.g., 2023)" min="1000" max="2099"></td>
+            </tr>
+            <tr>
+                <td colspan="4"> <!-- This cell spans all columns -->
+                    <label for="image" class="form-label">Cover Image Filename</label>
+                    <input type="text" class="form-control" id="image" name="image" 
+                            value="{{ book.image if book and book.image else '' }}" 
+                            placeholder="e.g., book-cover.jpg" maxlength="50">
+                    <small class="form-text text-muted">
+                        Filename for book cover image in static/book-covers/
+                    </small>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" 
+                              placeholder="Enter book description (optional)">{{ book.description if book and book.description else '' }}</textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <button type="submit" class="btn btn-primary me-2">
+                        {% if is_edit %}Update Book{% else %}Create Book{% endif %}
+                    </button>
+                    <a href="{{ url_for('book_list') }}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+{% endblock %} 

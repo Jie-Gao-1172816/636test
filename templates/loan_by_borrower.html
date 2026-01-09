@@ -1,0 +1,84 @@
+{% extends "base.html" %} 
+{% block title %}Loans by Borrower - Library Demo{% endblock %} 
+{% block content %}
+
+<div class="container mt-4"> <!-- container adds space around the content. mt-4 adds top margin -->
+
+    <h2>Loans by Borrower</h2>
+    
+    {% if loans_by_borrower %}
+        {% for borrower_id, borrower_data in loans_by_borrower.items() %}
+        <table class="table table-borderless mb-4">
+            <!-- Borrower Header -->
+            <tr>
+                <td class="bg-primary text-white p-3 rounded-top">
+                    <h5>{{ borrower_data.borrower.firstname }} {{ borrower_data.borrower.familyname.upper() }}</h5>
+                </td>
+            </tr>
+
+            <!-- Loans Table -->
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Loan Date</th>
+                        <th>Status</th>
+                        <th>Return Date</th>
+                        <th>Copy</th>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Year</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loan in borrower_data.loans %}
+                    <!-- Highlight row in red if overdue -->
+                    <tr{% if loan.is_overdue %} class="table-danger"{% endif %}>
+                        <td>{{ loan.loandate.strftime('%d %b %Y') if loan.loandate else 'N/A' }}</td>
+                        <td>{% if loan.is_overdue %}    <!-- Highlight overdue status -->
+                                <span class="text-danger"><strong><em>OVERDUE</em></strong></span>
+                            {% else %}
+                                {{ loan.loan_status }}
+                            {% endif %}
+                        </td>
+                        <td> <!-- Display returned date if returned, otherwise show '-' -->
+                            {% if loan.returned %}
+                                {{ loan.returned.strftime('%d %b %Y') }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ loan.format }} (ID: {{ loan.bookcopyid }})</td>
+                        <td><strong>{{ loan.booktitle }}</strong></td>
+                        <td>{{ loan.author }}</td>
+                        <td>{{ loan.bookcategory }}</td>
+                        <td>{{ loan.yearofpublication }}</td>
+                        <td> <!-- Show return button if on loan -->
+                            {% if loan.loan_status == 'On Loan' %}
+                                <!-- url_for returns equivalent of: /return_book?loan_id={{ loan.loanid }} -->
+                                <a class="btn btn-sm btn-outline-success" href="{{ url_for('return_book', loan_id=loan.loanid) }}">
+                                    Return
+                                </a>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <tr> <!-- Blank row after table -->
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+        {% endfor %}
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        <h5 class="alert-heading">No loan records found</h5>
+        <p>There are currently no loan records in the system.</p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %} 

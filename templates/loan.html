@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Borrow a Book{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <h2>Borrow a Book</h2>
+
+  <!-- Loan Form (table layout) -->
+  <!-- Change form action to select book copies if not present or to submit loan -->
+  <form  
+    {% if not available_copies %}
+      action="{{ url_for('loan_select_book') }}"
+    {% else %}
+      action="{{ url_for('loan') }}"
+    {% endif %}
+  method="POST">
+    <table class="table table-borderless">
+      <tbody>
+        <!-- Borrower -->
+        <tr>
+          <td>
+            <label for="borrower" class="form-label">
+              Select Borrower <span class="text-danger"><strong>*</strong></span>
+            </label>
+          </td>
+          <td>
+            <select class="form-control" id="borrower" name="borrower_id" required>
+              <option value="">-- Choose Borrower --</option>
+              {% for borrower in borrowers %}
+              <!-- In IF, we need to check that selected_borrower is set and convert borrower.borrowerid 
+                  (which is int from the database) to string before comparing values.-->
+              <option value="{{ borrower.borrowerid }}" 
+                {% if selected_borrower and selected_borrower == borrower.borrowerid|string %}selected{% endif %}>
+                {{ borrower.firstname }} {{ borrower.familyname | upper }}
+              </option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+
+        <!-- Book -->
+        <tr>
+          <td>
+            <label for="book" class="form-label">
+              Select Book <span class="text-danger"><strong>*</strong></span>
+            </label>
+          </td>
+          <td>
+            <select class="form-control" id="book" name="book_id" required>
+              <option value="">-- Choose Book --</option>
+              {% for book in books %}
+              <option value="{{ book.bookid }}" 
+                {% if selected_book and selected_book == book.bookid|string %}selected{% endif %}>
+                {{ book.booktitle }} - {{ book.author }}
+              </option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+
+        <!-- Book Copy (only when a book is selected) -->
+        {% if available_copies %}
+        <tr>
+          <td>
+            <label for="copy" class="form-label">
+              Select Copy <span class="text-danger"><strong>*</strong></span>
+            </label>
+          </td>
+          <td>
+            <select class="form-control" id="copy_id" name="copy_id" required>
+              {% if available_copies %}
+                <option value="">-- Choose Copy --</option>
+                {% for copy in available_copies %}
+                <option value="{{ copy.bookcopyid }}">
+                  {{ copy.format }} (ID: {{ copy.bookcopyid }})
+                </option>
+                {% endfor %}
+              {% else %}
+                <option value="">No copies available</option>
+              {% endif %}
+            </select>
+          </td>
+        </tr>
+        {% endif %}
+
+        <!-- Create Loan button (always visible) -->
+        <tr>
+          <td></td>
+          <td>
+            <button type="submit" class="btn btn-primary">
+              <!-- Change submit button text based on whether book copies are available yet-->
+              {% if available_copies %} 
+                Select Book
+              {% else %}
+                Create Loan
+              {% endif %}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+
+  {% if book_detail %}
+  <!-- Book Detail Panel (table layout) -->
+  <table class="table table-borderless">
+    <tbody>
+      <tr>
+        <!-- Cover -->
+        <td style="width: 300px;">
+          {% if book_detail.image and book_detail.image.strip() %}
+          <img
+            src="{{ url_for('static', filename='book-covers/' + book_detail.image) }}"
+            alt="{{ book_detail.booktitle }}"
+            class="book-detail-cover-image"
+            onerror="this.src='/static/book-covers/no-cover-image.jpg';">
+          {% else %}
+          <img
+            src="{{ url_for('static', filename='book-covers/no-cover-image.jpg') }}"
+            alt="{{ book_detail.booktitle }}"
+            class="book-detail-cover-image">
+          {% endif %}
+        </td>
+
+        <!-- Details -->
+        <td>
+          <h4>{{ book_detail.booktitle }}</h4>
+
+          <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <td><strong>Author:</strong></td>
+                <td>{{ book_detail.author }}</td>
+              </tr>
+              <tr>
+                <td><strong>Category:</strong></td>
+                <td>{{ book_detail.bookcategory or 'N/A' }}</td>
+              </tr>
+              <tr>
+                <td><strong>Year of Publication:</strong></td>
+                <td>{{ book_detail.yearofpublication or 'N/A' }}</td>
+              </tr>
+              {% if book_detail.description %}
+              <tr>
+                <td style="vertical-align: top;"><strong>Description:</strong></td>
+                <td>{{ book_detail.description }}</td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  {% endif %}
+
+</div>
+{% endblock %}

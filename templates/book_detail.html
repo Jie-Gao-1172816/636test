@@ -1,0 +1,43 @@
+{% extends "base.html" %} 
+{% block title %}{{ book.booktitle }} - Library Demo{% endblock %} 
+{% block content %}
+
+<div class="container mt-4"> <!-- container adds space around the content. mt-4 adds top margin -->
+    <h2>Book Details</h2>
+
+    <p class="text-end"></p>
+
+    <table class="table table-borderless">
+        <tr>
+            <td><!-- url_for generates equivalent of:  /book_edit?book_id={{ book.bookid }} -->
+                <a href="{{ url_for('book_list') }}">Return to Book List</a></td>
+            <td> <!-- text-end class aligns the content to the right -->
+                <a href="{{ url_for('book_edit', book_id=book.bookid) }}" class="btn btn-primary">Edit</a>
+            </td>
+        </tr>
+        <tr>
+            <!-- Book Cover -->
+            <td width="300px">
+                {% if book.image and book.image.strip() %}
+                    <img class="object-fit-contain w-100 h-100 image-fluid" src="{{ url_for('static', filename='book-covers/' + book.image) }}">
+                {% else %}
+                    <img class="object-fit-contain w-100 h-100" src="{{ url_for('static', filename='book-covers/no-cover-image.jpg') }}">
+                {% endif %}
+            </td>
+            <!-- Book Details -->
+            <td>
+                <h1 class="mb-4">{{ book.booktitle }}</h1>
+                
+                <p class="fs-5 mb-3"><strong>Author:</strong> {{ book.author }}</p>
+                <p class="fs-5 mb-3"><strong>Category:</strong> {{ book.bookcategory }}</p>
+                <p class="fs-5 mb-3"><strong>Year of Publication:</strong> {{ book.yearofpublication }}</p>
+                
+                {% if book.description %}
+                    <p class="mb-0">{{ book.description }}</p>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</div>
+
+{% endblock %} 

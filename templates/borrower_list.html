@@ -1,0 +1,71 @@
+{% extends "base.html" %} {% block title %}List Borrowers - Library Demo{% endblock %} {% block content %}
+
+<div class="container mt-4"> <!-- container adds space around the content. mt-4 adds top margin -->
+
+    <h2>List Borrowers</h2>
+    <p class="text-end"> <!-- text-end aligns the button to the right -->
+        <a href="{{ url_for('borrower_manage') }}" class="btn btn-primary">Add New Borrower</a>
+    </p>
+
+    <!-- Search Form -->
+    <form method="POST" action="{{ url_for('borrower_list') }}">
+        <table class="table table-borderless">
+            <tr>
+                <td class="w-30"> <!-- Cell 30% width -->
+                    <label for="firstname" class="form-label mb-1">First Name</label>
+                    <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Search by first name..." value="{{ firstname_search or '' }}" />
+                </td>
+                <td class="w-30">
+                    <label for="familyname" class="form-label mb-1">Family Name</label>
+                    <input type="text" class="form-control" id="familyname" name="familyname" placeholder="Search by family name..." value="{{ familyname_search or '' }}" />
+                </td>
+                <td class="w-40 align-bottom">
+                    <button type="submit" class="btn btn-primary me-2">Search</button>
+                    <a href="{{ url_for('borrower_list') }}" class="btn btn-secondary">Clear</a>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <!-- Search Results -->
+    {% if borrowers %}
+        <h5>Search Results ({{ borrowers|length }} borrowers found)</h5>
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Date of Birth</th>
+                    <th>Address</th>
+                    <th>Suburb</th>
+                    <th>City</th>
+                    <th>Postcode</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for borrower in borrowers %}
+                <tr>
+                    <td><strong>{{ borrower.firstname }} {{ borrower.familyname.upper() }}</strong></td>
+                    <td>
+                        {% if borrower.dateofbirth %} {{ borrower.dateofbirth.strftime('%d %b %Y') }} {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ borrower.address or '-' }}</td>
+                    <td>{{ borrower.suburb or '-' }}</td>
+                    <td>{{ borrower.city or '-' }}</td>
+                    <td>{{ borrower.postcode or '-' }}</td>
+                    <td>
+                        <!-- url_for returns equivalent of: /borrower_manage?borrower_id={{ borrower.borrowerid }} -->
+                        <a href="{{ url_for('borrower_manage', borrower_id=borrower.borrowerid) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h5 class="alert-heading">No borrowers found</h5>
+    {% endif %} 
+</div>
+
+{% endblock %}

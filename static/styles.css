@@ -1,0 +1,32 @@
+/* Library Demo Custom Styles */
+
+/* Book cover containers */
+.book-cover-container {
+    height: 300px;
+    width: 100%;
+}
+
+/* Book cover images */
+.book-cover-image {
+    max-height: 280px;
+    max-width: 90%;
+    object-fit: contain;
+}
+
+/* Book detail page cover */
+.book-detail-cover-container {
+    width: 300px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.book-detail-cover-image {
+    max-width: 280px;
+    max-height: 380px;
+    object-fit: contain;
+} 

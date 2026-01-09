@@ -1,0 +1,38 @@
+{% extends "base.html" %} {% block title %}Home - Library Demo{% endblock %} {% block content %}
+<div class="container mt-4">
+    <!-- Welcome Section -->
+    <!-- mb-x and mt-x classes are used for margin spacing - mb for bottom, mt for top -->
+    <h2 class="text-center mb-4">Nau mai! Welcome!</h2>
+    <h4 class="text-center mb-4">Welcome to your local library</h4>
+    <p class="text-center mb-4"><em>This site is an example of a simple web application 
+        in Flask completed to the standard expected in COMP636. </em></p>
+
+    <!-- Popular Books Section -->
+    <h3 class="text-center mt-5 mb-3">Our most popular three books</h3>
+
+    {% if popular_books %}
+        <table class="table table-borderless">
+            <tr>
+                {% for book in popular_books %}
+                    <td class="text-center">
+                        <a href="{{ url_for('book_detail', book_id=book.bookid) }}" class="text-decoration-none">
+                        {% if book.image and book.image.strip() %}
+                            <!-- Display book cover image, but size to keep inside a 300x300 box -->
+                            <img src="{{ url_for('static', filename='book-covers/' + book.image) }}"
+                                class="img-fluid"
+                                style="max-width:300px; max-height:300px; object-fit:contain;">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='book-covers/no-cover-image.jpg') }}"
+                                class="img-fluid"
+                                style="max-width:300px; max-height:300px; object-fit:contain;">
+                        {% endif %}
+                        <h6 class="text-dark">{{ book.booktitle }}</h6>
+                        </a>
+                        <small class="text-muted">{{ book.loan_count }} times borrowed</small>
+                    </td>
+                {% endfor %}
+            </tr>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}
